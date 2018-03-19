@@ -65,10 +65,10 @@ Wskaż miejsce, w którym zostanie umieszczony wynik działania instrukcji, oraz
 Zaimplementuj w asemblerze x86-64 funkcję konwertującą liczbę typu « uint32_t » między formatem little-endian i big-endian . Argument funkcji jest przekazany w rejestrze %edi, a wynik zwracany w rejestrze %eax
 
 ```C
-ror $8, %dx
-ror $16, %edx
-ror $8, %dx
-mov %edx, %eax
+ror  $8, %dx
+ror  $16, %edx
+ror  $8, %dx
+mov  %edx, %eax
 ```
 
 Podaj wyrażenie w języku C, które kompilator optymalizujący przetłumaczy do instrukcji ror lub rol.
@@ -98,3 +98,22 @@ lrotl:
 ```
 
 ## Zadanie 4
+
+Zaimplementuj w asemblerze x86-64 funkcję liczącą wyrażenie « x + y ». Argumenty i wynik funkcji są 128-bitowymi liczbami całkowitymi ze znakiem i nie mieszczą się w rejestrach maszynowych. Zatem « x » jest przekazywany przez rejestry %rdi (starsze 64 bity) i %rsi (młodsze 64 bity), analogicznie argument « y » jest przekazywany przez %rdx i %rcx , a wynik jest zwracany w rejestrach %rdx i %rax . Należy użyć instrukcji set!
+
+```C
+add   %rsi, %rcx
+setc  %rbx
+add   %rdi, %rdx
+add   %rbx, %rdx
+mov   %rcx, %rax
+```
+
+Jak uprościłby się kod, gdyby można było użyć instrukcji adc ?
+
+```C
+add   %rsi, %rcx
+adc   %rdi, %rdx
+mov   %rcx, %rax
+```
+
