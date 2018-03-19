@@ -55,7 +55,7 @@ w at-t: instr source, destination
  `0x14 => M[0x110]`
 5. decq %rcx - odejmij 1.  
  `0x0 => R[%rcx]`
-6. imulq 8(%rax) - pomnóż z wartością w %rax i umieść wynik w %rdx i %rax.  
+6. imulq 8(%rax) - pomnóż argument z wartością w %rax i umieść wynik w %rdx i %rax.  
  `0xAB00 => R[%rdx]:R[%rax]`
 7. leaq 7(%rcx,%rcx,8), %rdx - przekopiuj adres tego pierwszego do drugiego.
 
@@ -79,7 +79,7 @@ To się przyda:
 ror to przesunięcie zapętlone - bity, które wyszły z prawej, wracają z lewej.  
 000111 -> 100011 -> 110001 itd.
 
-```C
+```assmebly
 rorw  $8, %dx
 rorl  $16, %edx
 rorw  $8, %dx
@@ -88,7 +88,7 @@ movl  %edx, %eax
 
 Podaj wyrażenie w języku C, które kompilator optymalizujący przetłumaczy do instrukcji ror lub rol.
 
-```C
+```assembly
 unsigned long lrotl(unsigned int value,unsigned int rotation)
 {
 return (value<<rotation) | (value>>(32 - rotation));
@@ -116,7 +116,7 @@ lrotl:
 
 Zaimplementuj w asemblerze x86-64 funkcję liczącą wyrażenie « x + y ». Argumenty i wynik funkcji są 128-bitowymi liczbami całkowitymi ze znakiem i nie mieszczą się w rejestrach maszynowych. Zatem « x » jest przekazywany przez rejestry %rdi (starsze 64 bity) i %rsi (młodsze 64 bity), analogicznie argument « y » jest przekazywany przez %rdx i %rcx , a wynik jest zwracany w rejestrach %rdx i %rax . Należy użyć instrukcji set!
 
-```C
+```assembly
 movq   $0 %rbx ;?
 addq   %rsi, %rcx
 setc   %bl ;ustawia bajt na jeden, jeśli flaga przepełnienia ustawiona
@@ -127,7 +127,7 @@ movq   %rcx, %rax
 
 Jak uprościłby się kod, gdyby można było użyć instrukcji adc ?
 
-```C
+```assembly
 addq   %rsi, %rcx
 adc   %rdi, %rdx
 movq   %rcx, %rax
