@@ -75,15 +75,15 @@ w at-t: instr source, destination
 Zaimplementuj w asemblerze x86-64 funkcję konwertującą liczbę typu « uint32_t » między formatem little-endian i big-endian . Argument funkcji jest przekazany w rejestrze %edi, a wynik zwracany w rejestrze %eax
 
 To się przyda:  
-![alt text](rax.png "www3.nd.edu/~dthain/")  
+![tabelka](rax.png "www3.nd.edu/~dthain/")  
 ror to przesunięcie zapętlone - bity, które wyszły z prawej, wracają z lewej.  
 000111 -> 100011 -> 110001 itd.
 
-```assmebly
-rorw  $8, %dx
-rorl  $16, %edx
-rorw  $8, %dx
-movl  %edx, %eax
+```assembly
+movl  %edi, %eax
+rorw  $8, %ax
+rorl  $16, %eax
+rorw  $8, %ax
 ```
 
 Podaj wyrażenie w języku C, które kompilator optymalizujący przetłumaczy do instrukcji ror lub rol.
@@ -129,6 +129,68 @@ Jak uprościłby się kod, gdyby można było użyć instrukcji adc ?
 
 ```assembly
 addq   %rsi, %rcx
-adc   %rdi, %rdx
+adc   %rdi, %rdx ;dodaje %rdi do %rdx i wartość flagi przepełnienia
 movq   %rcx, %rax
+```
+
+## Zadanie 5
+
+Zaimplementuj w asemblerze x86-64 funkcję liczącą wyrażenie « x * y ». Argumenty i wynik funkcji są 128-bitowymi liczbami całkowitymi bez znaku. Argumenty i wynik są przypisane do tych samych rejestrów co w poprzednim zadaniu. Instrukcja mul wykonuje co najwyżej mnożenie dwóch 64-bitowych liczb i zwraca 128-bitowy wynik. Wiedząc, że n = NH · 2^64 + NL , zaprezentuj metodę obliczenia iloczynu, a dopiero potem przetłumacz algorytm na asembler.
+
+
+>(2^64 * AH + AL) * (2^64 * BH + BL) =  
+>2^128 * AH * BH + 2^64 * (AH * BL + BH * AL) + AL * BL
+
+2^128 * AH * BH pomijamy, bo wynik ma się mieścić w 128 bitach
+
+```assembly
+movq %rsi, %rax
+mulq %rdx       ;BH*AL
+movq %rax, %rbx ;wynik na bok
+movq %rcx, %rax
+mulq %rdi       ;AH*BL
+addq %rax, %rbx ;wynik dodajemy od poprzedniego i na bok
+movq %rsi, %rax
+mulq %rcx       ;AL*BL, wynik na %rax, czyli niskich bitach
+addq %rbx, %rdx ;to co mielismy na boku dodajemy do %rdx, czyli wysokie bity
+```
+
+## Zadanie 6
+
+Zaimplementuj poniższą funkcję w asemblerze x86-64, przy czym wartości « x » i « y » typu « uint64_t » są przekazywane przez rejestry %rdi i %rsi , a wynik zwracany w rejestrze %rax.   
+![funkcja](zad6.png "cahir")
+
+```assembly
+addq  %rdi, %rsi
+setcq %al        ;jesli flaga przepełnienia zapalona, to ustaw 1
+negq  %rax       ;zaneguj i dodaj jeden (zamień na liczbę przeciwną)
+orq   %rsi, %rax ;jesli nastapilo przepelnienie, to %rax będzie samymi jedynkami,
+                ;jeśli nie, to wynikiem.
+```
+
+Jak uprościłby się kod, gdyby można było użyć instrukcji cmov?
+
+```assembly
+addq   %rdi, %rsi
+movq   %rsi, %rax
+cmovcq $0xFFFFFFFFFFFFFFFF, %rax ;jeśli flaga przepełnienia zapalona,
+                                ;to ustaw %rax na 0xFF..
+```
+
+## Zadanie 7
+
+Zapisz w języku C funkcję o sygnaturze «int puzzle(long x, unsigned n)», której kod w asemblerze podano niżej. Przedstaw jednym zdaniem co ta procedura robi.
+
+![funkcja](zad7.png "cahir")
+
+Zgodnie z System V ABI 3 dla architektury x86-64, argumenty «x» i «y» są przekazywane odpowiednio przez rejestry %rdi i %rsi, a wynik zwracany w rejestrze %rax. Napisz funkcję w języku C, która będzie liczyła
+dokładnie to samo co powyższy kod w asemblerze. Postaraj się, aby była ona jak najbardziej zwięzła.
+
+```C
+long decode(long x, long y){ //funkcja sprawdza, czy nastąpi przepełnienie dodawania
+    long z = x + y;
+    x = x ^ z
+    y = y ^ z
+    return (x && y >> 63)
+}
 ```
