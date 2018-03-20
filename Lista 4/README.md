@@ -88,7 +88,7 @@ rorw  $8, %ax
 
 Podaj wyrażenie w języku C, które kompilator optymalizujący przetłumaczy do instrukcji ror lub rol.
 
-```assembly
+```C
 unsigned long lrotl(unsigned int value,unsigned int rotation)
 {
 return (value<<rotation) | (value>>(32 - rotation));
