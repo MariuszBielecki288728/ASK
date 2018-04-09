@@ -20,6 +20,7 @@ a potem wybieramy takie A i B, żeby się zgadzało:
 | ------------- | :---------: |
 | 0-__179__/183 | int x[A][B] |
 | 184           | long y      |
+A = 9; B = 5
 
 ## Zadanie 2
 
@@ -34,7 +35,7 @@ R * S * T = 455. bo sizeof(A) = 3640
 A więc R = 7; S = 5; T = 13.
 
 
-## Zadanie 3 ????
+## Zadanie 3
 
 ![alt text](zad3.png "cahir")
 
@@ -55,3 +56,14 @@ ecx <- last + first
 8+rax -> rdx <- first + 40i + 8  
 last + first -> rcx  
 last + first -> 16 + first + 40i + (first + 40i + 8)*8  
+
+## Zadanie 4
+![alt text](zad4.png "cahir")
+
+Unia elem ma 16B, bo największy jej element (w tym przypadku oba) ma 16B.
+
+```C
+void proc(union elem* t){
+ t->e2.x = *((t->e2.next)->e1.p) - (t->e2.next)->e1.y;
+}
+```
